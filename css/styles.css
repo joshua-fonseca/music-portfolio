@@ -183,17 +183,17 @@ main { flex: 1; width: 100%; }
   align-items: center;
   padding: clamp(16rem, 40vh, 32rem) var(--gutter) clamp(14rem, 35vh, 28rem);
 }
-.hero__inner { width: min(80rem, 100%); display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
+.hero__inner { width: min(54rem, 100%); display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
 .hero h1 {
   margin: 0;
   font-weight: 200;
   text-align: center;
-  font-size: clamp(1.4rem, 0.6rem + 3.4vw, 4rem);
+  font-size: clamp(1.2rem, 0.45rem + 2.25vw, 2.7rem);
   line-height: 1.25;
 }
 .divider { display: flex; align-items: center; width: 100%; color: var(--ink); }
-.divider__line { flex: 1; height: 2px; background: linear-gradient(90deg, var(--ink), var(--purple-light) 50%, var(--ink)); }
-.divider svg { width: 2.4rem; height: 2rem; flex: none; }
+.divider__line { flex: 1; height: 2px; background: linear-gradient(90deg, var(--ink), color-mix(in srgb, var(--purple-light) 45%, var(--bg)) 50%, var(--ink)); }
+.divider svg { width: 1.8rem; height: 1.3rem; flex: none; }
 
 .btn-more { display: inline-flex; align-items: center; text-decoration: none; color: var(--ink); margin-top: -1rem; }
 .btn-more__chev { display: block; width: 2rem; height: 2.6rem; flex: none; background: currentColor; }
