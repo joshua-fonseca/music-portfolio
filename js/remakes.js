@@ -25,11 +25,14 @@ function remakeMedia(value, originalTitle) {
 function buildRemake(row) {
   const section = el('section', 'remake');
   section.setAttribute('aria-label', `remake of ${row.original_title}`);
-  section.append(
-    column(`original: ${row.original_title}`,
-      youtubeEmbed(row.original_youtube_link, `${row.original_title} (original) — YouTube video`)),
-    column('remake', remakeMedia(row.remake_youtube_link, row.original_title)),
-  );
+  const original = column(`original: ${row.original_title}`,
+    youtubeEmbed(row.original_youtube_link, `${row.original_title} (original) — YouTube video`));
+  if (row.remake_date) {
+    const date = el('p', 'remake__date');
+    date.textContent = `remade ${row.remake_date}`;
+    original.append(date);
+  }
+  section.append(original, column('remake', remakeMedia(row.remake_youtube_link, row.original_title)));
   return section;
 }
 
