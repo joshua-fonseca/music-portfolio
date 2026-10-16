@@ -196,12 +196,12 @@ main { flex: 1; width: 100%; }
 .divider__line { flex: 1; height: 2px; background: linear-gradient(90deg, var(--ink), color-mix(in srgb, var(--purple-light) 45%, var(--bg)) 50%, var(--ink)); }
 .divider svg { width: 1.8rem; height: 1.3rem; flex: none; }
 
-.btn-more { display: inline-flex; align-items: center; text-decoration: none; color: var(--ink); margin-top: -1rem; }
-.btn-more__chev { display: block; width: 2rem; height: 2.6rem; flex: none; background: currentColor; }
+.btn-more { --btn: var(--ink); display: inline-flex; align-items: center; text-decoration: none; color: var(--ink); margin-top: -1rem; }
+.btn-more__chev { display: block; width: 2rem; height: 2.6rem; flex: none; background: var(--btn); transition: background-color .15s; }
 .btn-more__chev--left { clip-path: polygon(65% 0, 100% 0, 35% 50%, 100% 100%, 65% 100%, 0 50%); }
 .btn-more__chev--right { clip-path: polygon(35% 0, 0 0, 65% 50%, 0 100%, 35% 100%, 100% 50%); }
 .btn-more__plate {
-  background: var(--ink);
+  background: var(--btn);
   color: var(--on-ink);
   font-weight: 200;
   font-size: clamp(1rem, .8rem + .7vw, 1.6rem);
@@ -211,9 +211,9 @@ main { flex: 1; width: 100%; }
   padding: 0 2.6rem;
   /* 1.3rem = half the height, so the ends have the same 45° point as the arrows */
   clip-path: polygon(1.3rem 0, calc(100% - 1.3rem) 0, 100% 50%, calc(100% - 1.3rem) 100%, 1.3rem 100%, 0 50%);
-  transition: color .15s;
+  transition: background-color .15s;
 }
-.btn-more:is(:hover, :focus-visible) .btn-more__plate { color: var(--purple-light); }
+.btn-more:is(:hover, :focus-visible) { --btn: var(--purple-light); }
 .btn-more:focus-visible { outline: 3px solid var(--purple-light); outline-offset: 4px; }
 
 /* ---------- footer ---------- */
