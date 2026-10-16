@@ -223,26 +223,26 @@ main { flex: 1; width: 100%; }
   background-size: 640px 180px;
   padding: 3.25rem var(--gutter);
 }
-.streaming__list { display: flex; justify-content: center; flex-wrap: wrap; gap: 2rem; }
+.streaming__list { display: flex; justify-content: center; flex-wrap: wrap; gap: 1.5rem; }
 .badge {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 14rem;
-  height: 4.3rem;
+  width: 11.5rem;
+  height: 3.3rem;
   border-radius: 999px;
   text-decoration: none;
   line-height: 1.15;
   font-weight: 400;
   transition: filter .15s, transform .15s;
 }
-.badge__pre { font-size: .65rem; font-weight: 200; }
-.badge__name { font-size: 1.2rem; font-weight: 400; }
+.badge__pre { font-size: .6rem; font-weight: 200; }
+.badge__name { font-size: 1rem; font-weight: 400; }
 .badge:is(:hover, :focus-visible) { filter: brightness(1.12); transform: translateY(-2px); }
 .badge:focus-visible { outline: 3px solid var(--on-ink); outline-offset: 3px; }
 .badge--apple { background: linear-gradient(90deg, #f4436b, #7b3fd8); color: #fff; }
-.badge--ytm { background: #fff; color: #111; }
+.badge--ytm { background: #c4161c; color: #fff; }
 .badge--spotify { background: #1ed760; color: #0b0b0b; }
 
 .legal {
