@@ -2,7 +2,8 @@ import { loadCsv } from './csv.js';
 import { el, youtubeId, thumbUrl } from './youtube.js';
 
 const SPEED = 35; // px per second; cards drift left -> right
-const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const FRICTION = 0.7; // seconds for a flick to settle back to the drift speed
+const MAX_FLICK = 3500; // px per second
 
 function buildCard(song) {
   const id = youtubeId(song.youtube_link);
@@ -25,7 +26,9 @@ function buildCard(song) {
   }
 
   const title = el('span', 'songcard__title');
-  title.textContent = song.song_name;
+  const titleText = el('span');
+  titleText.textContent = song.song_name;
+  title.append(titleText);
   const meta = el('span', 'songcard__meta');
   const label = el('span', 'songcard__label'); label.textContent = 'Artist';
   const value = el('span', 'songcard__value'); value.textContent = song.artist;
@@ -58,7 +61,17 @@ function initCarousel(root, songs) {
 
   let setWidth = 1;
   let x = 0; // 0 <= x < setWidth; content moves right as x grows
-  let hovered = false, focused = false, dragging = false;
+  let focused = false, dragging = false;
+  let userPaused = false;
+
+  const toggle = el('button', 'carousel__toggle', { type: 'button' });
+  const syncToggle = () => {
+    toggle.textContent = userPaused ? 'play' : 'pause';
+    toggle.setAttribute('aria-label', userPaused ? 'Play song carousel' : 'Pause song carousel');
+  };
+  toggle.addEventListener('click', () => { userPaused = !userPaused; syncToggle(); });
+  syncToggle();
+  root.append(toggle);
 
   const normalize = () => { x = ((x % setWidth) + setWidth) % setWidth; };
   const paint = () => { track.style.transform = `translate3d(${x - setWidth}px,0,0)`; };
@@ -78,22 +91,25 @@ function initCarousel(root, songs) {
     paint();
   }
 
-  // --- auto-scroll ---
+  // --- auto-scroll + momentum ---
+  // vel (px/s) eases toward the drift speed (or 0 when paused), so a flick
+  // keeps coasting after release and a pause fades out instead of snapping.
+  let vel = SPEED;
   let last = performance.now();
   function frame(now) {
     const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
-    if (!(hovered || focused || dragging || reducedMotion.matches)) {
-      x += SPEED * dt;
+    if (!dragging) {
+      const target = userPaused || focused ? 0 : SPEED;
+      vel = target + (vel - target) * Math.exp(-dt / FRICTION);
+      x += vel * dt;
       normalize();
       paint();
     }
     requestAnimationFrame(frame);
   }
 
-  // --- pause on hover / focus ---
-  viewport.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') hovered = true; });
-  viewport.addEventListener('pointerleave', () => { hovered = false; });
+  // --- pause on keyboard focus ---
   viewport.addEventListener('focusin', (e) => {
     focused = true;
     const card = e.target.closest('.songcard');
@@ -109,9 +125,11 @@ function initCarousel(root, songs) {
 
   // --- click/touch drag, either direction ---
   let down = false, moved = false, startX = 0, startPos = 0, pid = 0, suppressClick = false;
+  let samples = []; // recent pointer positions, for release velocity
   viewport.addEventListener('pointerdown', (e) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     down = true; moved = false; startX = e.clientX; startPos = x; pid = e.pointerId;
+    samples = [{ t: e.timeStamp, x: e.clientX }];
   });
   viewport.addEventListener('pointermove', (e) => {
     if (!down) return;
@@ -122,12 +140,23 @@ function initCarousel(root, songs) {
       viewport.classList.add('is-dragging');
     }
     if (moved) { x = startPos + dx; normalize(); paint(); }
+    samples.push({ t: e.timeStamp, x: e.clientX });
+    while (samples.length > 2 && e.timeStamp - samples[0].t > 100) samples.shift();
   });
   const endDrag = () => {
     if (!down) return;
     down = false; dragging = false;
     viewport.classList.remove('is-dragging');
-    if (moved) { suppressClick = true; setTimeout(() => { suppressClick = false; }, 0); }
+    if (moved) {
+      suppressClick = true; setTimeout(() => { suppressClick = false; }, 0);
+      // hand the release velocity to the animation loop
+      const a = samples[0], b = samples[samples.length - 1];
+      const span = b.t - a.t;
+      const fresh = performance.now() - b.t < 100; // finger was still moving when it lifted
+      vel = fresh && span > 0
+        ? Math.max(-MAX_FLICK, Math.min(MAX_FLICK, ((b.x - a.x) / span) * 1000))
+        : 0;
+    }
   };
   viewport.addEventListener('pointerup', endDrag);
   viewport.addEventListener('pointercancel', endDrag);
