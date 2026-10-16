@@ -27,8 +27,10 @@ function buildOriginal(row) {
   } else {
     art.append(placeholder());
   }
-  const title = el('h3', 'songcard__title');
-  title.textContent = row.song_name;
+  const title = el('h3', 'songcard__title', { title: row.song_name }); // full name on hover if clamped
+  const titleText = el('span');
+  titleText.textContent = row.song_name;
+  title.append(titleText);
   const stats = el('dl', 'stats');
   stats.append(stat('bpm', row.bpm), stat('length', row.length), stat('genre', row.genre));
   card.append(art, title, stats);

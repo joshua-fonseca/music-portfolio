@@ -368,10 +368,10 @@ a.songcard--fav:focus-visible { outline: 3px solid var(--ink); outline-offset: 4
 .originals-group:first-child .group-title { margin-top: 0; }
 .originals { display: grid; gap: clamp(3rem, 6vw, 5.5rem); padding-block: clamp(2rem, 5vw, 5rem); }
 .original {
-  /* card = 12rem square art + title band + stats band; the video is sized
-     to that height at 16:9, so the art stays square */
+  /* card = 12rem square art + two-line title band + stats band; the video is
+     sized to that height at 16:9 */
   --card-w: 12rem;
-  --orig-h: 20.7rem;
+  --orig-h: 21.5rem;
   display: grid;
   grid-template-columns: var(--card-w) calc(var(--orig-h) * 16 / 9);
   justify-content: center;
@@ -379,10 +379,15 @@ a.songcard--fav:focus-visible { outline: 3px solid var(--ink); outline-offset: 4
   align-items: stretch;
 }
 .songcard--original { height: var(--orig-h); }
-.songcard--original .songcard__art { flex: 1; min-height: 8rem; }
+/* the art is always a full square; the title band takes whatever is left, so a
+   long title can't squeeze the art. Titles past two lines end in "…" */
+.songcard--original .songcard__art { flex: none; aspect-ratio: 1; }
 .songcard--original .songcard__title {
-  display: flex; align-items: center; justify-content: center; min-height: 2.9rem; padding: .4rem .6rem; font-size: 1.1rem;
-  text-transform: none;
+  flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0;
+  padding: .4rem .6rem; font-size: 1.1rem; line-height: 1.3; text-transform: none;
+}
+.songcard--original .songcard__title > span {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
 .original .embed { aspect-ratio: auto; }
 .stats { display: grid; grid-template-columns: 1fr 1fr; gap: .2rem .5rem; padding: .5rem .6rem .7rem; margin: 0; }
