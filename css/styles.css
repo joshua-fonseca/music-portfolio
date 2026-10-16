@@ -181,7 +181,7 @@ main { flex: 1; width: 100%; }
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 8rem var(--gutter) 3rem;
+  padding: clamp(16rem, 40vh, 32rem) var(--gutter) clamp(14rem, 35vh, 28rem);
 }
 .hero__inner { width: min(80rem, 100%); display: flex; flex-direction: column; align-items: center; gap: 1.25rem; }
 .hero h1 {
@@ -195,16 +195,21 @@ main { flex: 1; width: 100%; }
 .divider__line { flex: 1; height: 2px; background: linear-gradient(90deg, var(--ink), var(--purple-light) 50%, var(--ink)); }
 .divider svg { width: 2.4rem; height: 2rem; flex: none; }
 
-.btn-more { display: inline-flex; align-items: center; text-decoration: none; color: var(--ink); margin-top: .25rem; }
-.btn-more svg { width: 1.5rem; height: 3.2rem; flex: none; }
+.btn-more { display: inline-flex; align-items: center; text-decoration: none; color: var(--ink); margin-top: -1rem; }
+.btn-more__chev { display: block; width: 2rem; height: 2.6rem; flex: none; background: currentColor; }
+.btn-more__chev--left { clip-path: polygon(65% 0, 100% 0, 35% 50%, 100% 100%, 65% 100%, 0 50%); }
+.btn-more__chev--right { clip-path: polygon(35% 0, 0 0, 65% 50%, 0 100%, 35% 100%, 100% 50%); }
 .btn-more__plate {
-  display: block;
   background: var(--ink);
   color: var(--on-ink);
   font-weight: 200;
   font-size: clamp(1rem, .8rem + .7vw, 1.6rem);
-  padding: .65rem 2.4rem;
-  clip-path: polygon(1.1rem 0, calc(100% - 1.1rem) 0, 100% 50%, calc(100% - 1.1rem) 100%, 1.1rem 100%, 0 50%);
+  display: flex;
+  align-items: center;
+  height: 2.6rem; /* same as the arrows */
+  padding: 0 2.6rem;
+  /* 1.3rem = half the height, so the ends have the same 45° point as the arrows */
+  clip-path: polygon(1.3rem 0, calc(100% - 1.3rem) 0, 100% 50%, calc(100% - 1.3rem) 100%, 1.3rem 100%, 0 50%);
   transition: color .15s;
 }
 .btn-more:is(:hover, :focus-visible) .btn-more__plate { color: var(--purple-light); }
