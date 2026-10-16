@@ -17,6 +17,15 @@ export function youtubeId(link) {
   return id && /^[\w-]{6,}$/.test(id) ? id : null;
 }
 
+// Public oEmbed lookup (no API key, CORS-enabled): { title, author_name, ... }
+export async function fetchYouTubeInfo(id) {
+  const watch = `https://www.youtube.com/watch?v=${id}`;
+  const res = await fetch(`https://www.youtube.com/oembed?format=json&url=${encodeURIComponent(watch)}`,
+    { signal: AbortSignal.timeout(6000) });
+  if (!res.ok) throw new Error(`oEmbed ${res.status} for ${id}`);
+  return res.json();
+}
+
 export const embedUrl = (id) => `https://www.youtube-nocookie.com/embed/${id}`;
 export const thumbUrl = (id) => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
 

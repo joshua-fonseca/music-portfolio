@@ -1,9 +1,38 @@
 import { loadCsv } from './csv.js';
-import { el, youtubeId, thumbUrl } from './youtube.js';
+import { el, youtubeId, thumbUrl, fetchYouTubeInfo } from './youtube.js';
 
 const SPEED = 35; // px per second; cards drift left -> right
 const FRICTION = 0.7; // seconds for a flick to settle back to the drift speed
 const MAX_FLICK = 3500; // px per second
+
+// ---- fill blank song_name / artist from the YouTube link ----
+// Bracketed extras like "(Official Video)" or "[MV]" are dropped from titles.
+const EXTRAS = /\s*[(\[【][^)\]】]*\b(official|music video|mv|audio|lyrics?|visuali[sz]er)\b[^)\]】]*[)\]】]/gi;
+const cleanTitle = (t) => t.replace(EXTRAS, '').replace(/\s{2,}/g, ' ').trim();
+const cleanChannel = (c) => c.replace(/\s*-\s*Topic$/i, '').replace(/\s*(VEVO|Official)$/i, '').trim();
+
+function songFromYouTube(info) {
+  const channel = info.author_name || '';
+  const isTopic = /-\s*Topic$/i.test(channel); // YouTube Music auto channels: title is already the song
+  let title = cleanTitle(info.title || '');
+  let artist = cleanChannel(channel);
+  const dash = title.match(/^(.+?)\s+[-–—]\s+(.+)$/); // "Artist - Song"
+  if (!isTopic && dash) { artist = dash[1].trim(); title = dash[2].trim(); }
+  return { title, artist };
+}
+
+async function fillFromYouTube(song) {
+  const id = youtubeId(song.youtube_link);
+  if ((song.song_name && song.artist) || !id) return song;
+  try {
+    const { title, artist } = songFromYouTube(await fetchYouTubeInfo(id));
+    // anything typed into the CSV wins over the lookup
+    return { ...song, song_name: song.song_name || title, artist: song.artist || artist };
+  } catch (err) {
+    console.warn('could not look up', song.youtube_link, err);
+    return { ...song, song_name: song.song_name || 'untitled' };
+  }
+}
 
 function buildCard(song) {
   const id = youtubeId(song.youtube_link);
@@ -14,7 +43,7 @@ function buildCard(song) {
     card.target = '_blank';
     card.rel = 'noopener noreferrer';
     card.draggable = false;
-    card.setAttribute('aria-label', `${song.song_name} by ${song.artist} (on YouTube, opens in a new tab)`);
+    card.setAttribute('aria-label', `${song.song_name}${song.artist ? ` by ${song.artist}` : ''} (on YouTube, opens in a new tab)`);
   }
 
   // album_art (a file in assets/images/) wins; else the YouTube thumbnail; else a placeholder
@@ -211,7 +240,8 @@ function initCarousel(root, songs) {
 async function main() {
   const root = document.getElementById('favourites');
   try {
-    const songs = (await loadCsv('data/favourites.csv')).filter((s) => s.song_name);
+    const rows = (await loadCsv('data/favourites.csv')).filter((s) => s.song_name || s.youtube_link);
+    const songs = await Promise.all(rows.map(fillFromYouTube));
     if (!songs.length) throw new Error('no songs in data/favourites.csv');
     root.querySelector('.status')?.remove();
     initCarousel(root, songs);

@@ -17,6 +17,22 @@ The pages read these CSVs in the browser (`fetch`), so adding a row is all it ta
 
 The album art here is placeholder artwork only. Add the real covers to `assets/images/` yourself.
 
+## Favourites: paste just the link
+
+In `favourites.csv` you can leave `song_name` and `artist` blank and only paste the link:
+
+```
+album_art,song_name,artist,youtube_link
+,,,https://www.youtube.com/watch?v=Eax2zhVA0Zo
+```
+
+When the about page loads, it looks up each blank row with YouTube's public oEmbed service and fills in:
+
+- **song_name:** the video title, minus extras like `(Official Video)`, `[MV]` or `(Lyrics)`.
+- **artist:** the channel name, minus ` - Topic`, `VEVO` or `Official`. If the title looks like `Artist - Song`, it is split into the artist and the song instead.
+
+Anything you type in the CSV always wins, so if a lookup comes out wrong, type the correct title or artist in that row. If the lookup fails, for example if YouTube is unreachable, the card shows "untitled" but still links to the video. Links to YouTube Music "Topic" uploads give the cleanest results.
+
 ## YouTube links
 
 Use the address-bar watch link, for example `https://www.youtube.com/watch?v=Eax2zhVA0Zo`, not the Share button link. In `remakes.csv`, `remake_youtube_link` can instead be an `.mp3` file name from `assets/audio/` (for example `my-remake.mp3`) to show an audio player.
