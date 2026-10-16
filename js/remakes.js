@@ -40,8 +40,8 @@ async function main() {
   const list = document.getElementById('remakes');
   try {
     const rows = (await loadCsv('data/remakes.csv')).filter((r) => r.original_title);
-    list.querySelector('.status')?.remove();
     if (!rows.length) throw new Error('no rows in data/remakes.csv');
+    list.querySelector('.status')?.remove();
     list.append(...rows.map(buildRemake));
   } catch (err) {
     console.error(err);

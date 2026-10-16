@@ -5,8 +5,10 @@ The pages read these CSVs in the browser (`fetch`), so adding a row is all it ta
 | file | columns | used on |
 |---|---|---|
 | `favourites.csv` | `album_art,song_name,artist,youtube_link` | about page carousel |
-| `originals.csv` | `album_art,song_name,bpm,length,genre,youtube_link` | originals page |
+| `originals.csv` | `album_art,song_name,bpm,length,genre,youtube_link,done` | originals page |
 | `remakes.csv` | `original_title,original_youtube_link,remake_title,remake_youtube_link,remake_date` | remakes page |
+
+In `originals.csv`, `done` is `y` (listed under "complete") or `n` (listed under "abandoned"). A blank counts as complete.
 
 `remake_date` is free text, for example `July 2026`. It shows as "remade July 2026" under the original's video. Leave it blank to show nothing.
 

@@ -357,7 +357,16 @@ a.songcard--fav:focus-visible { outline: 3px solid var(--ink); outline-offset: 4
 .songcard--fav img { -webkit-user-drag: none; }
 
 /* ---------- originals ---------- */
-.originals { display: grid; gap: clamp(5rem, 11vw, 10rem); padding-block: clamp(2rem, 5vw, 5rem); }
+/* "complete" / "abandoned": smaller than the page title, no rule, indented */
+.group-title {
+  margin: 4rem 0 0;
+  padding-left: clamp(1rem, 2.5vw, 2.5rem);
+  font-weight: 300;
+  font-size: clamp(1.05rem, .85rem + .6vw, 1.5rem);
+  line-height: 1.3;
+}
+.originals-group:first-child .group-title { margin-top: 0; }
+.originals { display: grid; gap: clamp(3rem, 6vw, 5.5rem); padding-block: clamp(2rem, 5vw, 5rem); }
 .original {
   /* card = 12rem square art + title band + stats band; the video is sized
      to that height at 16:9, so the art stays square */

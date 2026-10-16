@@ -27,7 +27,7 @@ function buildOriginal(row) {
   } else {
     art.append(placeholder());
   }
-  const title = el('h2', 'songcard__title');
+  const title = el('h3', 'songcard__title');
   title.textContent = row.song_name;
   const stats = el('dl', 'stats');
   stats.append(stat('bpm', row.bpm), stat('length', row.length), stat('genre', row.genre));
@@ -37,13 +37,28 @@ function buildOriginal(row) {
   return article;
 }
 
+function buildGroup(heading, rows) {
+  const section = el('section', 'originals-group');
+  const h2 = el('h2', 'group-title');
+  h2.append(Object.assign(el('span', '', { 'aria-hidden': 'true' }), { textContent: '>>> ' }), heading);
+  const list = el('div', 'originals');
+  list.append(...rows.map(buildOriginal));
+  section.append(h2, list);
+  return section;
+}
+
 async function main() {
   const list = document.getElementById('originals');
   try {
     const rows = (await loadCsv('data/originals.csv')).filter((r) => r.song_name);
-    list.querySelector('.status')?.remove();
     if (!rows.length) throw new Error('no songs in data/originals.csv');
-    list.append(...rows.map(buildOriginal));
+    list.querySelector('.status')?.remove();
+    // done = "n" means abandoned; "y" (or blank) means complete
+    const abandoned = (r) => (r.done || '').trim().toLowerCase() === 'n';
+    const groups = [['complete', rows.filter((r) => !abandoned(r))], ['abandoned', rows.filter(abandoned)]];
+    for (const [heading, songs] of groups) {
+      if (songs.length) list.append(buildGroup(heading, songs));
+    }
   } catch (err) {
     console.error(err);
     const status = list.querySelector('.status');
