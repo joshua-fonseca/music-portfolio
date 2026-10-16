@@ -26,7 +26,9 @@
   --font: "Cascadia Mono", ui-monospace, "Cascadia Code", Consolas, monospace;
   --gutter: clamp(1rem, 3.5vw, 4rem);
   --content-max: 96rem;
-  --notch: 2.75rem;
+  --notch: 1.6rem;
+  --outline: .65rem; /* purple edge on the lower slant of the point */
+  --outline-bottom: .3rem; /* purple edge along the straight bottom */
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -73,10 +75,9 @@ ul { list-style: none; margin: 0; padding: 0; }
   pointer-events: none;
 }
 .site-header > * { pointer-events: auto; }
-.site-header--home-only { justify-content: flex-end; }
 
 .plate {
-  display: block;
+  display: flow-root; /* keeps the face's bottom margin inside the plate */
   background: var(--ink);
   clip-path: polygon(var(--notch) 0, 0 50%, var(--notch) 100%, 100% 100%, 100% 0);
 }
@@ -90,19 +91,22 @@ ul { list-style: none; margin: 0; padding: 0; }
   gap: .75rem;
   background: var(--surface);
   color: var(--ink);
-  margin: 0 0 .5rem 3px;
-  min-height: 5.5rem;
-  padding: 0 2rem 0 calc(var(--notch) + 1.25rem);
-  clip-path: inherit;
+  margin: 0 0 var(--outline-bottom);
+  min-height: 4.5rem;
+  padding: 0 1.75rem 0 calc(var(--notch) + 1rem);
+  /* plate shape shifted up, so purple shows along the bottom and the lower
+     slant only; the slant band tapers from --outline to --outline-bottom */
+  clip-path: polygon(var(--notch) calc(var(--outline) * -1), 0 calc(50% + (var(--outline-bottom) / 2) - var(--outline)), var(--notch) 100%, 100% 100%, 100% calc(var(--outline) * -1));
   transition: background-color .3s, color .3s;
 }
 .plate--left .plate__face {
-  margin: 0 3px .5rem 0;
-  padding: 0 calc(var(--notch) + 1.25rem) 0 2rem;
+  clip-path: polygon(0 calc(var(--outline) * -1), 0 100%, calc(100% - var(--notch)) 100%, 100% calc(50% + (var(--outline-bottom) / 2) - var(--outline)), calc(100% - var(--notch)) calc(var(--outline) * -1));
+  padding: 0 calc(var(--notch) + 1rem) 0 1.75rem;
 }
 
 .nav-list { display: flex; align-items: center; }
-.nav-list li + li { border-left: 2px solid var(--ink); margin-left: 1.75rem; padding-left: 1.75rem; }
+.nav-list li { display: flex; align-items: center; }
+.nav-list li + li::before { content: ""; width: 1px; height: 1.1rem; background: var(--ink); margin: 0 1.1rem; }
 
 .nav-link {
   text-decoration: none;
@@ -111,18 +115,18 @@ ul { list-style: none; margin: 0; padding: 0; }
   cursor: pointer;
   padding: .25rem .1rem;
   font-weight: 200;
-  font-size: 1.25em;
+  font-size: .95em;
   transition: color .15s;
 }
 .nav-link:is(:hover, :focus-visible) { color: var(--purple-light); }
 .nav-link:focus-visible { outline: 2px solid var(--purple-light); outline-offset: 4px; }
 .nav-link[aria-current="page"] { text-decoration: underline; text-underline-offset: .35em; }
-.nav-link svg { display: block; width: 1.75rem; height: 1.75rem; }
+.nav-link svg { display: block; width: 1.35rem; height: 1.35rem; }
 
 .nav-mobile { display: none; position: relative; width: min(17rem, 60vw); }
 .menu-btn { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: pointer; position: relative; z-index: 2; }
-.menu-btn .plate__face { font-size: 1.15em; padding: 0 1.25rem 0 calc(var(--notch) + .5rem); }
-.menu-btn svg { width: 1.9rem; height: 1.9rem; }
+.menu-btn .plate__face { font-size: 1em; padding: 0 1.25rem 0 calc(var(--notch) + .5rem); }
+.menu-btn svg { width: 1.5rem; height: 1.5rem; }
 .menu-btn[aria-expanded="true"] .plate__face { background: var(--ink); color: var(--on-ink); }
 .menu-btn:focus-visible { outline: none; }
 .menu-btn:focus-visible .plate__face { color: var(--purple-light); }
@@ -135,15 +139,15 @@ ul { list-style: none; margin: 0; padding: 0; }
 .menu-list li:nth-child(2) { transition-delay: .04s; }
 .menu-list li:nth-child(3) { transition-delay: .08s; }
 .menu-list .plate { width: 100%; padding: 0; border: 0; cursor: pointer; text-decoration: none; }
-.menu-list .plate__face { font-size: 1.15em; min-height: 5rem; }
+.menu-list .plate__face { font-size: 1em; min-height: 4.25rem; }
 .menu-list .plate:is(:hover, :focus-visible) .plate__face { color: var(--purple-light); }
 .menu-list .plate:focus-visible { outline: none; }
 
 @media (max-width: 48rem) {
   .nav-desktop { display: none; }
   .nav-mobile { display: block; }
-  .plate { --notch: 2rem; }
-  .plate__face { min-height: 4.5rem; }
+  .plate { --notch: 1.3rem; }
+  .plate__face { min-height: 4rem; }
   .plate--left .plate__face { padding-left: 1.25rem; padding-right: calc(var(--notch) + .75rem); }
 }
 @media (prefers-reduced-motion: reduce) {

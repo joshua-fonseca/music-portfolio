@@ -19,15 +19,13 @@ const NEW_TAB = `<span class="sr-only"> (opens in a new tab)</span>`;
 const current = (name) => (PAGE === name ? ' aria-current="page"' : '');
 
 function headerHTML() {
-  const home = PAGE === 'home' ? '' : `
+  return `
+  <header class="site-header">
     <nav class="nav-home" aria-label="Home">
       <div class="plate plate--left"><div class="plate__face">
-        <a class="nav-link" href="index.html">home</a>
+        <a class="nav-link" href="index.html"${current('home')}>home</a>
       </div></div>
-    </nav>`;
-  return `
-  <header class="site-header ${PAGE === 'home' ? 'site-header--home-only' : ''}">
-    ${home}
+    </nav>
     <div class="nav-right">
       <nav class="nav-desktop" aria-label="Primary">
         <div class="plate"><div class="plate__face">
