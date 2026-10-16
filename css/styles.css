@@ -92,8 +92,8 @@ ul { list-style: none; margin: 0; padding: 0; }
   background: var(--surface);
   color: var(--ink);
   margin: 0 0 var(--outline-bottom);
-  min-height: 4.5rem;
-  padding: 0 1.75rem 0 calc(var(--notch) + 1rem);
+  min-height: 5rem;
+  padding: 0 2rem 0 calc(var(--notch) + 1rem);
   /* plate shape shifted up, so purple shows along the bottom and the lower
      slant only; the slant band tapers from --outline to --outline-bottom */
   clip-path: polygon(var(--notch) calc(var(--outline) * -1), 0 calc(50% + (var(--outline-bottom) / 2) - var(--outline)), var(--notch) 100%, 100% 100%, 100% calc(var(--outline) * -1));
@@ -101,12 +101,13 @@ ul { list-style: none; margin: 0; padding: 0; }
 }
 .plate--left .plate__face {
   clip-path: polygon(0 calc(var(--outline) * -1), 0 100%, calc(100% - var(--notch)) 100%, 100% calc(50% + (var(--outline-bottom) / 2) - var(--outline)), calc(100% - var(--notch)) calc(var(--outline) * -1));
-  padding: 0 calc(var(--notch) + 1rem) 0 1.75rem;
+  padding: 0 calc(var(--notch) + 1rem) 0 2rem;
 }
 
+.nav-desktop .plate__face { padding-left: calc(var(--notch) + 2.5rem); }
 .nav-list { display: flex; align-items: center; }
 .nav-list li { display: flex; align-items: center; }
-.nav-list li + li::before { content: ""; width: 1px; height: 1.1rem; background: var(--ink); margin: 0 1.1rem; }
+.nav-list li + li::before { content: ""; width: 1px; height: 1.1rem; background: var(--ink); margin: 0 3rem; }
 
 .nav-link {
   text-decoration: none;
@@ -115,18 +116,18 @@ ul { list-style: none; margin: 0; padding: 0; }
   cursor: pointer;
   padding: .25rem .1rem;
   font-weight: 200;
-  font-size: .95em;
+  font-size: 1.1em;
   transition: color .15s;
 }
 .nav-link:is(:hover, :focus-visible) { color: var(--purple-light); }
 .nav-link:focus-visible { outline: 2px solid var(--purple-light); outline-offset: 4px; }
 .nav-link[aria-current="page"] { text-decoration: underline; text-underline-offset: .35em; }
-.nav-link svg { display: block; width: 1.35rem; height: 1.35rem; }
+.nav-link svg { display: block; width: 1.5rem; height: 1.5rem; }
 
 .nav-mobile { display: none; position: relative; width: min(17rem, 60vw); }
 .menu-btn { display: block; width: 100%; padding: 0; border: 0; background: none; cursor: pointer; position: relative; z-index: 2; }
-.menu-btn .plate__face { font-size: 1em; padding: 0 1.25rem 0 calc(var(--notch) + .5rem); }
-.menu-btn svg { width: 1.5rem; height: 1.5rem; }
+.menu-btn .plate__face { font-size: 1.1em; padding: 0 1.25rem 0 calc(var(--notch) + .5rem); }
+.menu-btn svg { width: 1.65rem; height: 1.65rem; }
 .menu-btn[aria-expanded="true"] .plate__face { background: var(--ink); color: var(--on-ink); }
 .menu-btn:focus-visible { outline: none; }
 .menu-btn:focus-visible .plate__face { color: var(--purple-light); }
@@ -139,7 +140,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 .menu-list li:nth-child(2) { transition-delay: .04s; }
 .menu-list li:nth-child(3) { transition-delay: .08s; }
 .menu-list .plate { width: 100%; padding: 0; border: 0; cursor: pointer; text-decoration: none; }
-.menu-list .plate__face { font-size: 1em; min-height: 4.25rem; }
+.menu-list .plate__face { font-size: 1.1em; min-height: 4.6rem; }
 .menu-list .plate:is(:hover, :focus-visible) .plate__face { color: var(--purple-light); }
 .menu-list .plate:focus-visible { outline: none; }
 
@@ -147,7 +148,7 @@ ul { list-style: none; margin: 0; padding: 0; }
   .nav-desktop { display: none; }
   .nav-mobile { display: block; }
   .plate { --notch: 1.3rem; }
-  .plate__face { min-height: 4rem; }
+  .plate__face { min-height: 4.4rem; }
   .plate--left .plate__face { padding-left: 1.25rem; padding-right: calc(var(--notch) + .75rem); }
 }
 @media (prefers-reduced-motion: reduce) {
