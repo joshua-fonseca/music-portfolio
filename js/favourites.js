@@ -23,6 +23,8 @@ function buildCard(song) {
   const artSrc = song.album_art ? `assets/images/${song.album_art}` : link ? thumbUrl(id) : null;
   if (artSrc) {
     const img = el('img', '', { src: artSrc, alt: '', loading: 'lazy', draggable: 'false' });
+    // thumbnails are 4:3 with black bars baked in top and bottom; zoom past them
+    if (!song.album_art) img.classList.add('songcard__thumb');
     img.addEventListener('error', () => img.replaceWith(placeholder()), { once: true });
     art.append(img);
   } else {
