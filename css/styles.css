@@ -104,7 +104,7 @@ ul { list-style: none; margin: 0; padding: 0; }
   padding: 0 calc(var(--notch) + 1rem) 0 2rem;
 }
 
-.nav-desktop .plate__face { padding-left: calc(var(--notch) + 2.5rem); }
+.nav-desktop .plate__face { padding-left: calc(var(--notch) + 2.5rem); padding-right: 3.5rem; }
 .nav-list { display: flex; align-items: center; }
 .nav-list li { display: flex; align-items: center; }
 .nav-list li + li::before { content: ""; width: 1px; height: 1.1rem; background: var(--ink); margin: 0 3rem; }
