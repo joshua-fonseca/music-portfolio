@@ -7,7 +7,10 @@ const LINKS = {
   spotify: 'https://open.spotify.com/artist/2cuFqV91fw2pcqE7h6fljM',
   github: 'https://github.com/joshua-fonseca',
 };
-const EMAIL = 'jfonse01@uoguelph.ca';
+// kept out of the HTML and assembled only when the contact popup opens, so
+// simple scrapers don't pick it up
+const EMAIL_PARTS = ['jfonse01', 'uoguelph', 'ca'];
+const email = () => `${EMAIL_PARTS[0]}@${EMAIL_PARTS[1]}.${EMAIL_PARTS[2]}`;
 
 const SUN = `<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><circle cx="12" cy="12" r="4.5"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></g></svg>`;
 const BURGER = `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 6h14M5 12h10M5 18h14"/></svg>`;
@@ -93,7 +96,7 @@ function mount() {
   document.body.insertAdjacentHTML('beforeend', footerHTML()
     + dialogHTML('contact-dialog', `
       <h2 id="contact-dialog-title">Questions, Support &amp; Press</h2>
-      <a href="mailto:${EMAIL}">${EMAIL}</a>`)
+      <a data-email></a>`)
     + dialogHTML('theme-dialog', `
       <h2 id="theme-dialog-title">dark mode</h2>
       <p>not implemented yet. check back later.</p>`));
@@ -135,7 +138,11 @@ const themeDialog = document.getElementById('theme-dialog');
 let themeTrigger = null;
 const openTheme = wireDialog(themeDialog, () => themeTrigger);
 
-document.querySelector('[data-open-contact]').addEventListener('click', (e) => openContact(e.currentTarget));
+document.querySelector('[data-open-contact]').addEventListener('click', (e) => {
+  const link = document.querySelector('[data-email]');
+  if (!link.href) { link.href = `mailto:${email()}`; link.textContent = email(); }
+  openContact(e.currentTarget);
+});
 
 // Dark mode is a stub for now: show a notice, leave the light theme alone.
 document.querySelectorAll('[data-theme-toggle]').forEach((btn) => {
