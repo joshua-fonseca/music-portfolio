@@ -15,12 +15,17 @@ function buildOriginal(row) {
 
   const card = el('div', 'songcard songcard--original');
   const art = el('div', 'songcard__art');
+  const placeholder = () => {
+    const span = el('span', 'songcard__placeholder');
+    span.textContent = 'no album art';
+    return span;
+  };
   if (row.album_art) {
     const img = el('img', '', { src: `assets/images/${row.album_art}`, alt: `Album art for ${row.song_name}` });
-    img.addEventListener('error', () => img.replaceWith(el('span', 'songcard__placeholder')), { once: true });
+    img.addEventListener('error', () => img.replaceWith(placeholder()), { once: true });
     art.append(img);
   } else {
-    art.append(el('span', 'songcard__placeholder'));
+    art.append(placeholder());
   }
   const title = el('h2', 'songcard__title');
   title.textContent = row.song_name;
