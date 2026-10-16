@@ -16,7 +16,9 @@ function buildOriginal(row) {
   const card = el('div', 'songcard songcard--original');
   const art = el('div', 'songcard__art');
   if (row.album_art) {
-    art.append(el('img', '', { src: `assets/images/${row.album_art}`, alt: `Album art for ${row.song_name}` }));
+    const img = el('img', '', { src: `assets/images/${row.album_art}`, alt: `Album art for ${row.song_name}` });
+    img.addEventListener('error', () => img.replaceWith(el('span', 'songcard__placeholder')), { once: true });
+    art.append(img);
   } else {
     art.append(el('span', 'songcard__placeholder'));
   }

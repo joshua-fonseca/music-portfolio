@@ -17,12 +17,16 @@ function buildCard(song) {
     card.setAttribute('aria-label', `${song.song_name} by ${song.artist} (on YouTube, opens in a new tab)`);
   }
 
+  // album_art (a file in assets/images/) wins; else the YouTube thumbnail; else a placeholder
   const art = el('span', 'songcard__art');
-  if (link) {
-    const img = el('img', '', { src: thumbUrl(id), alt: '', loading: 'lazy', draggable: 'false' });
+  const placeholder = () => el('span', 'songcard__placeholder');
+  const artSrc = song.album_art ? `assets/images/${song.album_art}` : link ? thumbUrl(id) : null;
+  if (artSrc) {
+    const img = el('img', '', { src: artSrc, alt: '', loading: 'lazy', draggable: 'false' });
+    img.addEventListener('error', () => img.replaceWith(placeholder()), { once: true });
     art.append(img);
   } else {
-    art.append(el('span', 'songcard__placeholder'));
+    art.append(placeholder());
   }
 
   const title = el('span', 'songcard__title');
