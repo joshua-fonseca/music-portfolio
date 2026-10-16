@@ -349,7 +349,6 @@ main { flex: 1; width: 100%; }
 .carousel__toggle:is(:hover, :focus-visible) { background: var(--ink); color: var(--on-ink); }
 .songcard--fav .songcard__art { aspect-ratio: 1; }
 a.songcard--fav { transition: filter .15s; }
-a.songcard--fav:is(:hover, :focus-visible) .songcard__title { color: var(--purple-light); }
 a.songcard--fav:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
 .songcard--fav img { -webkit-user-drag: none; }
 

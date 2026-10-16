@@ -51,8 +51,12 @@ function buildSet(songs, repeats, hidden) {
   for (let r = 0; r < repeats; r++) {
     for (const song of songs) {
       const li = buildCard(song);
-      // anything that isn't the one real copy is hidden from AT and the tab order
-      if (hidden || r > 0) { li.setAttribute('aria-hidden', 'true'); li.inert = true; }
+      // anything that isn't the one real copy is hidden from screen readers and
+      // skipped by Tab, but stays clickable: most visible cards are copies
+      if (hidden || r > 0) {
+        li.setAttribute('aria-hidden', 'true');
+        li.firstElementChild.tabIndex = -1;
+      }
       ul.append(li);
     }
   }
@@ -65,8 +69,12 @@ function initCarousel(root, songs) {
   viewport.append(track);
   root.append(viewport);
 
-  let setWidth = 1;
-  let x = 0; // 0 <= x < setWidth; content moves right as x grows
+  // Track = [copy][real][copy], each setWidth wide. The real set sits at
+  // screen x - setWidth .. x. x wraps within [low, low + setWidth); starting
+  // the range at half the viewport (not 0) means every real card, including
+  // the first, has a position where it is fully on screen.
+  let setWidth = 1, low = 0;
+  let x = 0; // content moves right as x grows
   let focused = false, dragging = false;
   let userPaused = false;
 
@@ -79,8 +87,8 @@ function initCarousel(root, songs) {
   syncToggle();
   root.append(toggle);
 
-  const normalize = () => { x = ((x % setWidth) + setWidth) % setWidth; };
-  const paint = () => { track.style.transform = `translate3d(${x - setWidth}px,0,0)`; };
+  const normalize = () => { x = low + ((((x - low) % setWidth) + setWidth) % setWidth); };
+  const paint = () => { track.style.transform = `translate3d(${x - 2 * setWidth}px,0,0)`; };
 
   function build() {
     track.replaceChildren();
@@ -90,9 +98,9 @@ function initCarousel(root, songs) {
     const single = probe.getBoundingClientRect().width || 1;
     const repeats = Math.max(1, Math.ceil(viewport.clientWidth / single));
     const real = buildSet(songs, repeats, false);
-    const clone = buildSet(songs, repeats, true);
-    track.replaceChildren(real, clone);
+    track.replaceChildren(buildSet(songs, repeats, true), real, buildSet(songs, repeats, true));
     setWidth = real.getBoundingClientRect().width || 1;
+    low = viewport.clientWidth / 2;
     normalize();
     paint();
   }
@@ -117,13 +125,22 @@ function initCarousel(root, songs) {
 
   // --- pause on keyboard focus ---
   viewport.addEventListener('focusin', (e) => {
+    // a mouse click also focuses the link (and keeps it focused after you come
+    // back from the new tab), so only keyboard focus counts
+    if (!e.target.matches(':focus-visible')) return;
     focused = true;
+    vel = 0; // stop at once so the focused card can't drift off screen
     const card = e.target.closest('.songcard');
     if (!card) return;
+    // bring the card fully on screen with the smallest move that stays inside
+    // the wrap range (wrapping would jump this card a whole set away)
+    const M = 16;
     const v = viewport.getBoundingClientRect(), c = card.getBoundingClientRect();
-    if (c.left < v.left) x += v.left - c.left + 16;
-    else if (c.right > v.right) x -= c.right - v.right + 16;
-    normalize(); paint();
+    const pos = c.left - v.left;
+    const lo = Math.max(x + M - pos, low);
+    const hi = Math.min(x + (v.width - c.width - M) - pos, low + setWidth - 0.01);
+    if (lo <= hi) x = Math.min(Math.max(x, lo), hi);
+    paint();
   });
   viewport.addEventListener('focusout', (e) => {
     if (!viewport.contains(e.relatedTarget)) focused = false;
@@ -170,6 +187,11 @@ function initCarousel(root, songs) {
   viewport.addEventListener('click', (e) => {
     if (suppressClick) { e.preventDefault(); e.stopPropagation(); }
   }, true);
+  // opening a card (click, or Enter from the keyboard) resumes the drift, so it
+  // is moving again when you come back from YouTube; Tab to a card to pause
+  viewport.addEventListener('click', (e) => {
+    if (e.target.closest('a.songcard')) focused = false;
+  });
   viewport.addEventListener('dragstart', (e) => e.preventDefault());
 
   // --- rebuild when the width changes ---
