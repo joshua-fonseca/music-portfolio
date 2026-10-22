@@ -1,4 +1,4 @@
-// Shared page chrome: navbar, footer, contact popup, "not implemented" popup.
+// Shared page chrome: navbar, footer, contact popup, theme toggle.
 const PAGE = document.body.dataset.page;
 
 const LINKS = {
@@ -13,11 +13,23 @@ const EMAIL_PARTS = ['jfonse01', 'uoguelph', 'ca'];
 const email = () => `${EMAIL_PARTS[0]}@${EMAIL_PARTS[1]}.${EMAIL_PARTS[2]}`;
 
 const SUN = `<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><circle cx="12" cy="12" r="4.5"/><g stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 1.5v3M12 19.5v3M1.5 12h3M19.5 12h3M4.6 4.6l2.1 2.1M17.3 17.3l2.1 2.1M4.6 19.4l2.1-2.1M17.3 6.7l2.1-2.1"/></g></svg>`;
+const MOON = `<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1z"/></svg>`;
 const BURGER = `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M5 6h14M5 12h10M5 18h14"/></svg>`;
 const CLOSE = `<svg viewBox="0 0 16 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M2 2l12 12M14 2L2 14"/></svg>`;
 const ORNAMENT = `<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 0l5 5-5 5-5-5z" fill="currentColor"/></svg>`;
 const ORNAMENT_OPEN = `<svg viewBox="0 0 10 10" aria-hidden="true"><path d="M5 .8L9.2 5 5 9.2.8 5z" fill="none" stroke="currentColor" stroke-width="1"/></svg>`;
 const NEW_TAB = `<span class="sr-only"> (opens in a new tab)</span>`;
+
+// ----- theme: saved choice wins, otherwise the OS preference
+const THEME_KEY = 'theme';
+function savedTheme() {
+  try { return localStorage.getItem(THEME_KEY); } catch { return null; }
+}
+const systemDark = matchMedia('(prefers-color-scheme: dark)');
+const systemTheme = () => (systemDark.matches ? 'dark' : 'light');
+let theme = savedTheme() || systemTheme();
+const applyTheme = () => { document.documentElement.dataset.theme = theme; };
+applyTheme();
 
 const current = (name) => (PAGE === name ? ' aria-current="page"' : '');
 
@@ -35,7 +47,7 @@ function headerHTML() {
           <ul class="nav-list">
             <li><a class="nav-link" href="originals.html"${current('originals')}>originals</a></li>
             <li><a class="nav-link" href="remakes.html"${current('remakes')}>remakes</a></li>
-            <li><button type="button" class="nav-link" data-theme-toggle aria-haspopup="dialog" aria-label="Switch to dark mode">${SUN}</button></li>
+            <li><button type="button" class="nav-link" data-theme-toggle data-theme-icon></button></li>
           </ul>
         </div></div>
       </nav>
@@ -46,7 +58,7 @@ function headerHTML() {
         <ul class="menu-list" id="mobile-menu" data-open="false">
           <li><a class="plate" href="originals.html"${current('originals')}><span class="plate__face">originals</span></a></li>
           <li><a class="plate" href="remakes.html"${current('remakes')}><span class="plate__face">remakes</span></a></li>
-          <li><button type="button" class="plate" data-theme-toggle aria-haspopup="dialog"><span class="plate__face">dark mode</span></button></li>
+          <li><button type="button" class="plate" data-theme-toggle><span class="plate__face" data-theme-label></span></button></li>
         </ul>
       </nav>
     </div>
@@ -96,10 +108,7 @@ function mount() {
   document.body.insertAdjacentHTML('beforeend', footerHTML()
     + dialogHTML('contact-dialog', `
       <h2 id="contact-dialog-title">Questions, Support &amp; Press</h2>
-      <a data-email></a>`)
-    + dialogHTML('theme-dialog', `
-      <h2 id="theme-dialog-title">dark mode</h2>
-      <p>not implemented yet. check back later.</p>`));
+      <a data-email></a>`));
   document.querySelector('[data-year]').textContent = new Date().getFullYear();
 }
 
@@ -134,9 +143,6 @@ function wireMenu() {
 mount();
 const closeMenu = wireMenu();
 const openContact = wireDialog(document.getElementById('contact-dialog'));
-const themeDialog = document.getElementById('theme-dialog');
-let themeTrigger = null;
-const openTheme = wireDialog(themeDialog, () => themeTrigger);
 
 document.querySelector('[data-open-contact]').addEventListener('click', (e) => {
   const link = document.querySelector('[data-email]');
@@ -144,12 +150,45 @@ document.querySelector('[data-open-contact]').addEventListener('click', (e) => {
   openContact(e.currentTarget);
 });
 
-// Dark mode is a stub for now: show a notice, leave the light theme alone.
+function syncThemeToggles() {
+  const toDark = theme !== 'dark';
+  document.querySelectorAll('[data-theme-toggle]').forEach((btn) => {
+    if (btn.matches('.nav-link')) {
+      btn.innerHTML = toDark ? SUN : MOON;
+      btn.setAttribute('aria-label', toDark ? 'Switch to dark mode' : 'Switch to light mode');
+    } else {
+      btn.querySelector('[data-theme-label]').textContent = toDark ? 'dark mode' : 'light mode';
+    }
+  });
+}
+let fadeTimer;
 document.querySelectorAll('[data-theme-toggle]').forEach((btn) => {
   btn.addEventListener('click', () => {
-    const inMenu = btn.closest('.menu-list');
-    if (inMenu) closeMenu(false);
-    themeTrigger = inMenu ? document.querySelector('.menu-btn') : btn;
-    openTheme(themeTrigger);
+    theme = theme === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem(THEME_KEY, theme); } catch { /* private mode */ }
+    const root = document.documentElement;
+    root.classList.add('theme-fade');
+    applyTheme();
+    syncThemeToggles();
+
+// follow the OS live (e.g. auto dark at night) until the user picks a theme
+systemDark.addEventListener('change', () => {
+  if (savedTheme()) return;
+  theme = systemTheme();
+  applyTheme();
+  syncThemeToggles();
+});
+    clearTimeout(fadeTimer);
+    fadeTimer = setTimeout(() => root.classList.remove('theme-fade'), 450);
+    if (btn.closest('.menu-list')) closeMenu(false);
   });
+});
+syncThemeToggles();
+
+// follow the OS live (e.g. auto dark at night) until the user picks a theme
+systemDark.addEventListener('change', () => {
+  if (savedTheme()) return;
+  theme = systemTheme();
+  applyTheme();
+  syncThemeToggles();
 });
