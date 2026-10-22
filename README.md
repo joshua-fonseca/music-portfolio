@@ -4,6 +4,8 @@
 
 A small, portfolio site for my music.
 
+**Live site:** <https://kkura.space>
+
 <img width="1890" height="1028" alt="image" src="https://github.com/user-attachments/assets/98ea03bb-34b2-40b5-b661-19ae4b628326" />
 
 ## Installing / Getting started
@@ -81,6 +83,7 @@ There are no environment variables or config files. Everything is edited in plac
 - **Album art:** image files in `assets/images/`, referenced by file name from the CSVs
 - **Streaming links, GitHub link and contact address:** the `LINKS` and `EMAIL_PARTS` constants at the top of `js/shell.js`
 - **Colours and spacing:** the theme tokens at the top of `css/styles.css`
+- Website: <https://kkura.space>
 
 ## Contributing
 
