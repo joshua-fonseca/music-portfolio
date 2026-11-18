@@ -27,6 +27,17 @@
         <div class="page">
             <h1 class="page-title"><span aria-hidden="true">&gt;&gt;&gt; </span>about me</h1>
             <div class="prose">
+                <div class="sound">
+                    <button type="button" class="btn-more" data-sound="assets/sounds/VEC2%20Cymbals%20Crash%2014.wav">
+                        <span class="btn-more__chev btn-more__chev--left" aria-hidden="true"></span>
+                        <span class="btn-more__plate">artcore crash.mp3</span>
+                        <span class="btn-more__chev btn-more__chev--right" aria-hidden="true"></span>
+                    </button>
+                    <div class="sound__row">
+                        <input class="sound__volume" type="range" min="0" max="100" value="50" aria-label="volume" data-volume>
+                        <output class="sound__percent" data-volume-label>50%</output>
+                    </div>
+                </div>
                 <p>hi, kkura. based in canada.</p>
                 <p>computer science graduate with a passion for rhythm games and exploring music despite never taking classes. a lot of the songs are made with the thought process of what sounds right to me with enough playing around.</p>
                 <p>the goal is to make music i’d want to listen to and if other’s like it too, all more the better.</p>
@@ -54,6 +65,7 @@
         </div>
     </main>
     <script type="module" src="js/shell.js"></script>
+    <script type="module" src="js/sound.js"></script>
     <script type="module" src="js/favourites.js"></script>
 </body>
 </html>

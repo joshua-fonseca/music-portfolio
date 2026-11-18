@@ -253,6 +253,20 @@ main { flex: 1; width: 100%; }
   transition: background-color .15s;
 }
 .btn-more:is(:hover, :focus-visible) { --btn: var(--card); }
+button.btn-more { background: none; border: 0; padding: 0; font: inherit; cursor: pointer; }
+.sound { display: flex; flex-direction: column; align-items: stretch; width: fit-content; max-width: 100%; margin: 0 0 2rem; gap: .75rem; }
+.sound .btn-more { margin-top: 0; }
+.sound .btn-more__plate { font-style: italic; }
+/* volume: a line and a dot, percent on the right */
+.sound__row { display: flex; align-items: center; gap: .6rem; align-self: center; width: 65%; min-width: 9rem; }
+.sound__percent { flex: none; min-width: 4ch; text-align: right; font-size: 1rem; font-weight: 400; }
+/* left of the dot is solid, right of it is faded; --pct is set by sound.js */
+.sound__volume { --pct: 50%; --fill-track: linear-gradient(90deg, currentColor var(--pct), color-mix(in srgb, currentColor 30%, transparent) var(--pct)); -webkit-appearance: none; appearance: none; flex: 1; min-width: 0; height: 1.25rem; margin: 0; background: transparent; cursor: pointer; color: var(--ink); }
+.sound__volume::-webkit-slider-runnable-track { height: 2px; background: var(--fill-track); }
+.sound__volume::-moz-range-track { height: 2px; background: var(--fill-track); }
+.sound__volume::-webkit-slider-thumb { -webkit-appearance: none; width: .85rem; height: .85rem; margin-top: calc(-.425rem + 1px); border: 0; border-radius: 50%; background: currentColor; transition: background-color .15s; }
+.sound__volume::-moz-range-thumb { width: .85rem; height: .85rem; border: 0; border-radius: 50%; background: currentColor; transition: background-color .15s; }
+.sound__volume:is(:hover, :focus-visible) { color: var(--hover); }
 .btn-more:focus-visible { outline: 3px solid var(--purple-light); outline-offset: 4px; }
 
 /* ---------- footer ---------- */
@@ -463,10 +477,12 @@ a.songcard--fav:focus-visible { outline: 3px solid var(--ink); outline-offset: 4
 .embed--empty { display: grid; place-items: center; color: var(--on-ink); font-weight: 400; text-align: center; padding: 1rem; }
 
 @media (max-width: 56rem) {
-  .original { grid-template-columns: minmax(0, 40rem); }
+  /* definite track width: a minmax() track shrinks to its content, and the
+     embed has none (its facade is absolutely positioned) */
+  .original { grid-template-columns: min(100%, 40rem); }
   .songcard--original { height: auto; width: min(100%, 24rem); justify-self: center; }
   .songcard--original .songcard__art { flex: none; aspect-ratio: 1; }
-  .original .embed { aspect-ratio: 16 / 9; }
+  .original .embed { width: 100%; aspect-ratio: 16 / 9; }
 }
 
 /* ---------- remakes ---------- */
